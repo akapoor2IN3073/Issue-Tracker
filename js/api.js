@@ -21,7 +21,7 @@ const API = {
   },
 
   // Resolve issue in Google Sheet
-  async resolveIssue(aliasId) {
+  async resolveIssue(aliasId, submissionStatus) {
     try {
       const response = await fetch(CONFIG.GOOGLE_SCRIPT_URL, {
         method: 'POST',
@@ -30,7 +30,8 @@ const API = {
         },
         body: JSON.stringify({
           action: 'resolve',
-          alias_id: aliasId
+          alias_id: aliasId,
+          submission_status: submissionStatus
         })
       });
       return response.json();

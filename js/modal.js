@@ -120,56 +120,44 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!currentFoundIssue) return;
 
     const aliasId = currentFoundIssue.alias_id;
-    const btn = document.getElementById('modal-resolve-btn');
 
-    if (!confirm(`Resolve issue "${aliasId}"?`)) return;
+    // Close find modal and open resolve modal
+    closeFindModal();
 
-    btn.disabled = true;
-    btn.textContent = 'Resolving...';
+    // Populate resolve modal with submission status dropdown
+    if (typeof currentResolvingIssueId !== 'undefined') {
+      // We're on my-issues page, use the existing resolve modal
+      currentResolvingIssueId = aliasId;
+      document.getElementById('resolve-issue-id').textContent = `Issue: ${aliasId}`;
+      document.getElementById('submission-status').value = '';
+      document.getElementById('resolve-modal').classList.remove('hidden');
+    } else {
+      // Fallback: directly resolve if resolve modal not available
+      if (!confirm(`Resolve issue "${aliasId}"?`)) return;
 
-    try {
-      // 1. Update Google Sheet
-      const result = await API.resolveIssue(aliasId);
+      try {
+        // Default submission status if modal not available
+        const result = await API.resolveIssue(aliasId, 'RESOLVED');
 
-      if (!result.success) {
-        alert(`Error: ${result.error || 'Failed to resolve in Google Sheet'}`);
-        btn.disabled = false;
-        btn.textContent = 'Resolve This Issue';
-        return;
+        if (!result.success) {
+          alert(`Error: ${result.error || 'Failed to resolve in Google Sheet'}`);
+          return;
+        }
+
+        const updatedIssue = {
+          ...currentFoundIssue,
+          resolved_at: result.resolved_at,
+          time_elapsed: result.time_elapsed,
+          submission_status: 'RESOLVED'
+        };
+        await storage.upsertIssue(updatedIssue);
+
+        alert('Issue resolved successfully!');
+
+      } catch (error) {
+        console.error('Error resolving issue from modal:', error);
+        alert('Failed to resolve issue. Please try again.');
       }
-
-      // 2. Update local storage (add if not exists, update if exists)
-      const updatedIssue = {
-        ...currentFoundIssue,
-        resolved_at: result.resolved_at,
-        time_elapsed: result.time_elapsed
-      };
-      await storage.upsertIssue(updatedIssue);
-
-      // 3. Update modal display
-      currentFoundIssue = updatedIssue;
-      resultDiv.innerHTML = `
-        <div class="issue-details resolved">
-          <p><strong>Alias ID:</strong> ${escapeHtmlModal(updatedIssue.alias_id)}</p>
-          <p><strong>Error Type:</strong> ${escapeHtmlModal(formatErrorTypeModal(updatedIssue.error_type))}</p>
-          <p><strong>Description:</strong> ${escapeHtmlModal(updatedIssue.description)}</p>
-          <p><strong>Created:</strong> ${formatDateModal(updatedIssue.created_at)}</p>
-          <p><strong>Resolved:</strong> ${formatDateModal(updatedIssue.resolved_at)}</p>
-          <p><strong>Time Elapsed:</strong> ${updatedIssue.time_elapsed || '-'}</p>
-        </div>
-        <p class="success" style="margin-top: 1rem;">Issue resolved successfully!</p>
-      `;
-
-      // 4. Refresh the table if on my-issues page
-      if (typeof renderIssues === 'function') {
-        await renderIssues();
-      }
-
-    } catch (error) {
-      console.error('Error resolving issue from modal:', error);
-      alert('Failed to resolve issue. Please try again.');
-      btn.disabled = false;
-      btn.textContent = 'Resolve This Issue';
     }
   }
 });

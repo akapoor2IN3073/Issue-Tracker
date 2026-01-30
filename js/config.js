@@ -11,6 +11,15 @@ const CONFIG = {
     { value: 'OTHER', label: 'Other' }
   ],
 
+  // Submission status options for resolving issues
+  SUBMISSION_STATUS_OPTIONS: [
+    { value: 'FIXED', label: 'Fixed' },
+    { value: 'WONT_FIX', label: 'Won\'t Fix' },
+    { value: 'DUPLICATE', label: 'Duplicate' },
+    { value: 'CANNOT_REPRODUCE', label: 'Cannot Reproduce' },
+    { value: 'RESOLVED', label: 'Resolved' }
+  ],
+
   DB_NAME: 'IssueTrackerDB',
   DB_VERSION: 1,
   STORE_NAME: 'issues'

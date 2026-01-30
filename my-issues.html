@@ -34,6 +34,7 @@
             <th>Created At</th>
             <th>Resolved At</th>
             <th>Time Elapsed</th>
+            <th>Status</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -57,6 +58,24 @@
       <input type="text" id="search-alias" placeholder="Enter Alias ID (e.g., BUG-001)">
       <button id="search-btn" class="btn-primary">Search</button>
       <div id="search-result"></div>
+    </div>
+  </div>
+
+  <!-- Resolve Issue Modal -->
+  <div id="resolve-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-btn" id="resolve-close-btn">&times;</span>
+      <h2>Resolve Issue</h2>
+      <p id="resolve-issue-id" style="margin-bottom: 1rem; font-weight: 500;"></p>
+
+      <div class="form-group">
+        <label for="submission-status">Submission Status</label>
+        <select id="submission-status" required>
+          <option value="">Select status...</option>
+        </select>
+      </div>
+
+      <button id="resolve-submit-btn" class="btn-primary">Submit</button>
     </div>
   </div>
 

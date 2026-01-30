@@ -63,23 +63,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     submitBtn.textContent = 'Submitting...';
 
     try {
-      // 1. Save to Google Sheet
-      const apiResult = await API.createIssue(issue);
-
-      if (!apiResult.success) {
-        showAlert(`Error: ${apiResult.error || 'Failed to save to Google Sheet'}`, 'error');
-        return;
-      }
-
-      // 2. Save to local IndexedDB
+      // 1. Save to local IndexedDB first (optimistic update)
       await storage.addIssue(issue);
 
-      showAlert('Issue reported successfully!', 'success');
+      showAlert('Issue reported successfully! Redirecting to My Issues...', 'success');
       form.reset();
+
+      // 2. Save to Google Sheet in background (don't block navigation)
+      API.createIssue(issue).then(apiResult => {
+        if (!apiResult.success) {
+          console.error('Failed to save to Google Sheet:', apiResult.error);
+        }
+      }).catch(error => {
+        console.error('Error saving to Google Sheet:', error);
+      });
+
+      // Redirect to My Issues page after a short delay
+      setTimeout(() => {
+        window.location.href = 'my-issues.html';
+      }, 1000);
 
     } catch (error) {
       console.error('Error submitting issue:', error);
-      showAlert('Failed to submit issue. Please check your connection and try again.', 'error');
+      showAlert('Failed to submit issue. Please try again.', 'error');
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Report Error';
