@@ -120,6 +120,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  function calculateTimeElapsed(createdAt, resolvedAt) {
+    const diffMs = resolvedAt - new Date(createdAt);
+    const seconds = Math.floor(diffMs / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) {
+      const remainingHours = hours % 24;
+      return `${days}d ${remainingHours}h`;
+    } else if (hours > 0) {
+      const remainingMinutes = minutes % 60;
+      return `${hours}h ${remainingMinutes}m`;
+    } else if (minutes > 0) {
+      return `${minutes}m`;
+    } else {
+      return `${seconds}s`;
+    }
+  }
+
   async function handleResolveSubmit() {
     const aliasId = currentResolvingIssueId;
     const submissionStatus = document.getElementById('submission-status').value;
@@ -134,40 +154,51 @@ document.addEventListener('DOMContentLoaded', async () => {
     submitBtn.textContent = 'Submitting...';
 
     try {
-      // 1. Update Google Sheet
-      const result = await API.resolveIssue(aliasId, submissionStatus);
+      // Calculate resolved_at and time_elapsed locally
+      const resolvedAt = new Date();
+      const resolvedAtISO = resolvedAt.toISOString();
 
-      if (!result.success) {
-        alert(`Error: ${result.error || 'Failed to resolve in Google Sheet'}`);
-        return;
-      }
-
-      // 2. Update local storage (check if exists first)
+      // Get the issue to calculate time elapsed
       const existsLocally = await storage.issueExists(aliasId);
+      let timeElapsed = '';
 
       if (existsLocally) {
-        // Update existing local issue
+        const issue = await storage.getIssue(aliasId);
+        timeElapsed = calculateTimeElapsed(issue.created_at, resolvedAt);
+
+        // 1. Update local storage first (optimistic)
         await storage.updateIssue(aliasId, {
-          resolved_at: result.resolved_at,
-          time_elapsed: result.time_elapsed,
+          resolved_at: resolvedAtISO,
+          time_elapsed: timeElapsed,
           submission_status: submissionStatus
         });
       } else {
-        // Issue was found via Find modal - fetch full data and save locally
+        // Issue was found via Find modal - fetch full data first
         const fetchResult = await API.findIssue(aliasId);
         if (fetchResult.success && fetchResult.issue) {
+          timeElapsed = calculateTimeElapsed(fetchResult.issue.created_at, resolvedAt);
+
           await storage.upsertIssue({
             ...fetchResult.issue,
-            resolved_at: result.resolved_at,
-            time_elapsed: result.time_elapsed,
+            resolved_at: resolvedAtISO,
+            time_elapsed: timeElapsed,
             submission_status: submissionStatus
           });
         }
       }
 
-      // 3. Close modal and re-render table
+      // 2. Close modal and re-render table immediately
       closeResolveModal();
       await renderIssues();
+
+      // 3. Update Google Sheet in background
+      API.resolveIssue(aliasId, submissionStatus).then(result => {
+        if (!result.success) {
+          console.error('Failed to resolve in Google Sheet:', result.error);
+        }
+      }).catch(error => {
+        console.error('Error resolving in Google Sheet:', error);
+      });
 
     } catch (error) {
       console.error('Error resolving issue:', error);
