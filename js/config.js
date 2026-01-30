@@ -6,8 +6,8 @@ const CONFIG = {
   ERROR_TYPES: [
     { value: 'UI_BUG', label: 'UI Bug' },
     { value: 'API_ERROR', label: 'API Error' },
-    { value: 'PERFORMANCE', label: 'Performance Issue' },
-    { value: 'SECURITY', label: 'Security Concern' },
+    { value: 'SUBMISSION_ERROR', label: 'Submission Error' },
+    { value: 'JSON_Error', label: 'JSON Error' },
     { value: 'OTHER', label: 'Other' }
   ],
 
