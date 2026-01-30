@@ -30,8 +30,8 @@ function formatErrorTypeModal(type) {
   const typeMap = {
     'UI_BUG': 'UI Bug',
     'API_ERROR': 'API Error',
-    'PERFORMANCE': 'Performance Issue',
-    'SECURITY': 'Security Concern',
+    'SUBMISSION_ERROR': 'Submission Error',
+    'JSON_Error': 'JSON Error',
     'OTHER': 'Other'
   };
   return typeMap[type] || type;
