@@ -171,6 +171,30 @@ body {
   cursor: not-allowed;
 }
 
+.btn-delete {
+  padding: 0.5rem;
+  background-color: transparent;
+  color: #6c757d;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-delete:hover {
+  color: #dc3545;
+  border-color: #dc3545;
+  background-color: #fff5f5;
+}
+
+.actions {
+  white-space: nowrap;
+}
+
 /* Filters section */
 .filters {
   display: flex;

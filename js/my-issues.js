@@ -53,10 +53,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         <td>${issue.resolved_at ? formatDate(issue.resolved_at) : '-'}</td>
         <td>${issue.time_elapsed || '-'}</td>
         <td>${issue.submission_status ? escapeHtml(formatSubmissionStatus(issue.submission_status)) : '-'}</td>
-        <td>
+        <td class="actions">
           ${!issue.resolved_at
             ? `<button class="btn-resolve" data-id="${escapeHtml(issue.alias_id)}">Resolve</button>`
             : '<span class="status-resolved">Resolved</span>'}
+          <button class="btn-delete" data-id="${escapeHtml(issue.alias_id)}" title="Delete issue">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M5.5 5.5V14.5H10.5V5.5H5.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2 3.5H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <path d="M6.5 1.5H9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </button>
         </td>
       `;
 
@@ -66,6 +73,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Attach resolve button handlers
     document.querySelectorAll('.btn-resolve').forEach(btn => {
       btn.addEventListener('click', handleResolve);
+    });
+
+    // Attach delete button handlers
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+      btn.addEventListener('click', handleDeleteClick);
     });
   }
 
@@ -77,6 +89,35 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('resolve-issue-id').textContent = `Issue: ${aliasId}`;
     document.getElementById('submission-status').value = '';
     document.getElementById('resolve-modal').classList.remove('hidden');
+  }
+
+  async function handleDeleteClick(e) {
+    const aliasId = e.target.dataset.id;
+
+    if (!confirm(`Are you sure you want to delete issue "${aliasId}"?`)) {
+      return;
+    }
+
+    try {
+      // 1. Delete from local storage first (optimistic)
+      await storage.deleteIssue(aliasId);
+
+      // 2. Re-render table immediately
+      await renderIssues();
+
+      // 3. Delete from Google Sheet in background
+      API.deleteIssue(aliasId).then(result => {
+        if (!result.success) {
+          console.error('Failed to delete from Google Sheet:', result.error);
+        }
+      }).catch(error => {
+        console.error('Error deleting from Google Sheet:', error);
+      });
+
+    } catch (error) {
+      console.error('Error deleting issue:', error);
+      alert('Failed to delete issue. Please try again.');
+    }
   }
 
   async function handleResolveSubmit() {

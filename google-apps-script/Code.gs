@@ -70,6 +70,10 @@ function doPost(e) {
       return handleResolve(sheet, data);
     }
 
+    if (data.action === "delete") {
+      return handleDelete(sheet, data);
+    }
+
     return createJsonResponse({ success: false, error: "Invalid action" });
   } catch (error) {
     return createJsonResponse({ success: false, error: error.toString() });
@@ -181,6 +185,34 @@ function handleResolve(sheet, data) {
         resolved_at: resolvedAt.toISOString(),
         time_elapsed: timeElapsed,
         submission_status: submissionStatus,
+      });
+    }
+  }
+
+  return createJsonResponse({
+    success: false,
+    error: "Issue not found",
+  });
+}
+
+/**
+ * Delete an issue by alias_id
+ */
+function handleDelete(sheet, data) {
+  const aliasId = data.alias_id;
+  const existingData = sheet.getDataRange().getValues();
+
+  for (let i = 1; i < existingData.length; i++) {
+    if (existingData[i][0] === aliasId) {
+      // Delete the row (i+1 because rows are 1-indexed)
+      sheet.deleteRow(i + 1);
+
+      // Re-apply conditional formatting after deletion
+      applyConditionalFormatting(sheet);
+
+      return createJsonResponse({
+        success: true,
+        message: "Issue deleted successfully"
       });
     }
   }

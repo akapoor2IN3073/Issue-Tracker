@@ -51,5 +51,25 @@ const API = {
       console.error('API findIssue error:', error);
       throw error;
     }
+  },
+
+  // Delete issue from Google Sheet
+  async deleteIssue(aliasId) {
+    try {
+      const response = await fetch(CONFIG.GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8',
+        },
+        body: JSON.stringify({
+          action: 'delete',
+          alias_id: aliasId
+        })
+      });
+      return response.json();
+    } catch (error) {
+      console.error('API deleteIssue error:', error);
+      throw error;
+    }
   }
 };

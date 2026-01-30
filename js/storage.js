@@ -96,6 +96,18 @@ class IssueStorage {
       request.onerror = () => reject(request.error);
     });
   }
+
+  // Delete issue by alias_id
+  async deleteIssue(aliasId) {
+    return new Promise((resolve, reject) => {
+      const transaction = this.db.transaction([CONFIG.STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(CONFIG.STORE_NAME);
+      const request = store.delete(aliasId);
+
+      request.onsuccess = () => resolve(true);
+      request.onerror = () => reject(request.error);
+    });
+  }
 }
 
 const storage = new IssueStorage();
