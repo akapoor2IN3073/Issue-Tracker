@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Issue Tracker - Raise Issue</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-buttons">
+      <a href="index.html" class="nav-btn active">Raise Issue</a>
+      <a href="my-issues.html" class="nav-btn">My Raised Issues</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <form id="issue-form" class="issue-form">
+      <h1>Report an Issue</h1>
+
+      <div id="form-alert"></div>
+
+      <div class="form-group">
+        <label for="alias-id">Alias ID (unique identifier)</label>
+        <input type="text" id="alias-id" name="alias_id" required placeholder="e.g., BUG-001">
+      </div>
+
+      <div class="form-group">
+        <label for="error-type">Error Type</label>
+        <select id="error-type" name="error_type" required>
+          <option value="">Select error type...</option>
+          <option value="UI_BUG">UI Bug</option>
+          <option value="API_ERROR">API Error</option>
+          <option value="PERFORMANCE">Performance Issue</option>
+          <option value="SECURITY">Security Concern</option>
+          <option value="OTHER">Other</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" rows="4" required placeholder="Describe the issue in detail..."></textarea>
+      </div>
+
+      <button type="submit" id="submit-btn" class="btn-primary">Report Error</button>
+    </form>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/raise-issue.js"></script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Issue Tracker - My Issues</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="nav-buttons">
+      <a href="index.html" class="nav-btn">Raise Issue</a>
+      <a href="my-issues.html" class="nav-btn active">My Raised Issues</a>
+    </div>
+  </nav>
+
+  <main class="container">
+    <h1>My Raised Issues</h1>
+
+    <div class="filters">
+      <label>
+        <input type="checkbox" id="filter-unresolved"> Show only unresolved
+      </label>
+      <button id="find-issue-btn" class="btn-secondary">Find Issue by ID</button>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="issues-table">
+        <thead>
+          <tr>
+            <th>Alias ID</th>
+            <th>Error Type</th>
+            <th>Description</th>
+            <th>Created At</th>
+            <th>Resolved At</th>
+            <th>Time Elapsed</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="issues-body">
+          <!-- Populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <div id="empty-state" class="empty-state hidden">
+      <p>No issues found.</p>
+      <a href="index.html" class="btn-primary" style="display: inline-block; width: auto; padding: 0.75rem 1.5rem;">Raise an Issue</a>
+    </div>
+  </main>
+
+  <!-- Find Issue Modal -->
+  <div id="find-modal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <h2>Find Issue by ID</h2>
+      <input type="text" id="search-alias" placeholder="Enter Alias ID (e.g., BUG-001)">
+      <button id="search-btn" class="btn-primary">Search</button>
+      <div id="search-result"></div>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/modal.js"></script>
+  <script src="js/my-issues.js"></script>
+</body>
+</html>
