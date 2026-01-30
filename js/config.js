@@ -1,7 +1,7 @@
 // Configuration
 const CONFIG = {
   // Replace with your deployed Google Apps Script Web App URL
-  GOOGLE_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyb05gSGOBj153CAPsCsGcTMzDFYjKg8F1avrhcDoHsHmNNlnenFrz0Ljr2YpiZTOIy/exec',
+  GOOGLE_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyx66BxJzhkkVTLUhRDBC2gAT30uQR-EjSOGn9UImtXAYiJCD6OxrJKEclAH-WGZsvjyQ/exec',
 
   ERROR_TYPES: [
     { value: 'UI_BUG', label: 'UI Bug' },
@@ -13,11 +13,8 @@ const CONFIG = {
 
   // Submission status options for resolving issues
   SUBMISSION_STATUS_OPTIONS: [
-    { value: 'FIXED', label: 'Fixed' },
-    { value: 'WONT_FIX', label: 'Won\'t Fix' },
-    { value: 'DUPLICATE', label: 'Duplicate' },
-    { value: 'CANNOT_REPRODUCE', label: 'Cannot Reproduce' },
-    { value: 'RESOLVED', label: 'Resolved' }
+    { value: 'SKIPPED', label: 'Skipped' },
+    { value: 'SUBMITTED', label: 'Submitted' },
   ],
 
   DB_NAME: 'IssueTrackerDB',
